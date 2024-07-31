@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="http://localhost:3000/add" enctype="multipart/form-data" method="post">
+        <div className="field">
+            <label for="departmentName">Department Name<span className="required">*</span></label>
+            <input type="text" id="departmentName" name="departmentName" placeholder="Department Name" required></input>
+        </div>
+
+        <div className="field">
+            <label for="designationDateOfJoining">Designation at Date Of Joining<span className="required">*</span></label>
+            <input type="text" id="designationDateOfJoining" name="designationDateOfJoining" placeholder="Enter the designation at date of joining" required></input>
+        </div>
+        <input type="file" name="photo" id="image1">
+        <input type="file" name="resume" id="image2">
+        <button type="submit">Upload</button>
+    </form>
+</body>
+
+</html>
