@@ -4,8 +4,11 @@ import multer from 'multer';
 import mongoose from 'mongoose';
 import { field } from './models/formFields.js'; // Adjust the path as needed
 import fs from 'fs'
+import exceljs from "exceljs"
+import zipCreate from './zipCreation.js'
 const app = express();
 const port = 5000;
+
 
 // Connect to MongoDB
 async function main() {
@@ -28,8 +31,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Routes
-app.get("/", (req, res) => {
-    res.send("Hey there");
+app.get("/", (req, res) => {    
+    res.status(200).send({success:true,message:"Hey there"});
 });
 
 
@@ -75,12 +78,35 @@ app.get('/download', async (req, res) => {
     try {
         const data = await field.find({});
         console.log(data);
+
+        //creating a instance of workbook
+        const workbook= new exceljs.Workbook();
+        const newSheet=workbook.addWorksheet("details");
+
+        let firstobj=data[0];
+        newSheet.columns=Object.keys(firstobj);
+
         let i = 0
         for (const iterator of data) {
             //connverting binary into its original form
-            fs.writeFileSync(`./uploads/${iterator.name}${i}.png`, iterator.image['data']);
+            const photoFilePath=`./uploads/images/${iterator.name}${i}.png`
+            const resumeFilePath=`./uploads/resumes/${iterator.name}${i}.pdf`
+            fs.writeFileSync(photoFilePath, iterator.image['data']);
+            fs.writeFileSync(resumeFilePath,iterator.resume['data']);
             i++;
+            let tempObj=iterator;
+            tempObj['photo']=photoFilePath;
+            tempObj['resume']=resumeFilePath;
+
+            //adding
+            newSheet.addRow(tempObj);
+
         }
+
+        //converting into excel
+        await workbook.xlsx.writeFile('./uploads/output.xlsx');
+        console.log("file saved successfully");
+        zipCreate("./uploads","./result.zip")
         res.status(200).send({ success: true });
         // res.download();
     }

@@ -1,10 +1,9 @@
-
 import mongoose from "mongoose";
 const fields = new mongoose.Schema({
-    departmentName: { type: String },
-    designationDateOfJoining: { type: String },
-    teacherName: { type: String },
-    qualification: { type: String },
+    departmentName: { type: String},
+    designationDateOfJoining: { type: String},
+    teacherName: { type: String},
+    qualification: { type: String},
     specialization: { type: String },
     joinDate: { type: String },
     basicPay: { type: String },
