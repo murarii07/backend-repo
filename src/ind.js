@@ -76,7 +76,7 @@ app.get('/portal', async (req, res) => {
 });
 app.get('/download', async (req, res) => {
     try {
-        const data = await field.find({});
+        const data = await field.find({},{_id:0,__v:0});
         console.log(data);
 
         //creating a instance of workbook
@@ -84,21 +84,30 @@ app.get('/download', async (req, res) => {
         const newSheet=workbook.addWorksheet("details");
 
         let firstobj=data[0];
-        const columns=Object.keys(firstobj).map(key=>({header:key,key});
+        //he raw data of the document is stored in a property called _doc.
+        console.log("first-----------",firstobj._doc)
+        const columns=Object.keys(firstobj._doc).map(key=>({header:key,key}));
         newSheet.columns=columns;
-        console.log(newSheet.columns);
+        console.log("columns------------------\n",Object.keys(firstobj._doc));
         let i = 0
+        if(!fs.existsSync("./uploads")){
+        s.mkdirSync("uploads");
+        fs.mkdirSync("./uploads/images");
+   fs.mkdirSync("./uploads/resumes");
+
+        }
+        
         for (const iterator of data) {
             //connverting binary into its original form
-            const photoFilePath=`./uploads/images/${i}_${iterator.fileName}`
-            const resumeFilePath=`./uploads/resumes/${i}_${iterator.fileName}`
+            const photoFilePath=`./uploads/images/${i}_${iterator.photo.fileName}`
+            const resumeFilePath=`./uploads/resumes/${i}_${iterator.resume.fileName}`
             fs.writeFileSync(photoFilePath, iterator.photo['data']);
             fs.writeFileSync(resumeFilePath,iterator.resume['data']);
             i++;
-            let tempObj=iterator;
+            let tempObj=iterator._doc;
             tempObj['photo']=photoFilePath;
             tempObj['resume']=resumeFilePath;
-
+            console.log(tempObj)
             //adding
             newSheet.addRow(tempObj);
 
