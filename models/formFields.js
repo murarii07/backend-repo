@@ -19,7 +19,7 @@ const fields = new mongoose.Schema({
     scalePay: { type: String },
     totalEmoluments: { type: String },
     phoneNo: { type: String },
-    photo: { fileNanme: String, data: Buffer, contentType: "string" },
-    resume: { fileNanme: String, data: Buffer, contentType: "string" },
+    photo: { fileName: String, data: Buffer, contentType: "string" },
+    resume: { fileName: String, data: Buffer, contentType: "string" },
 })
 export const field = new mongoose.model("userData", fields);

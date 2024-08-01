@@ -46,8 +46,8 @@ app.post("/add", upload.fields([{ name: 'photo', maxCount: 1 }, { name: 'resume'
             return res.status(400).send({ success: false, message: 'Image or resume not provided' });
         }
         const obj = req.body;
-        obj['photo'] = { fileName: `${req.files.photo[0].originalname}_${req.files.photo[0].fieldname}`, data: req.files.photo[0].buffer, contentType: req.files.photo[0].mimetype };
-        obj['resume'] = { fileName: `${req.files.resume[0].originalname}_${req.files.resume[0].fieldname}`, data: req.files.resume[0].buffer, contentType: req.files.resume[0].mimetype };
+        obj['photo'] = { fileName: `${req.files.photo[0].fieldname}_${req.files.photo[0].originalname}`, data: req.files.photo[0].buffer, contentType: req.files.photo[0].mimetype };
+        obj['resume'] = { fileName: `${req.files.resume[0].fieldname}_${req.files.resume[0].originalname}`, data: req.files.resume[0].buffer, contentType: req.files.resume[0].mimetype };
         console.log("---------------------------------\n", obj);
 
         // Save image to MongoDB
@@ -84,14 +84,15 @@ app.get('/download', async (req, res) => {
         const newSheet=workbook.addWorksheet("details");
 
         let firstobj=data[0];
-        newSheet.columns=Object.keys(firstobj);
-
+        const columns=Object.keys(firstobj).map(key=>({header:key,key});
+        newSheet.columns=columns;
+        console.log(newSheet.columns);
         let i = 0
         for (const iterator of data) {
             //connverting binary into its original form
-            const photoFilePath=`./uploads/images/${iterator.name}${i}.png`
-            const resumeFilePath=`./uploads/resumes/${iterator.name}${i}.pdf`
-            fs.writeFileSync(photoFilePath, iterator.image['data']);
+            const photoFilePath=`./uploads/images/${i}_${iterator.fileName}`
+            const resumeFilePath=`./uploads/resumes/${i}_${iterator.fileName}`
+            fs.writeFileSync(photoFilePath, iterator.photo['data']);
             fs.writeFileSync(resumeFilePath,iterator.resume['data']);
             i++;
             let tempObj=iterator;
