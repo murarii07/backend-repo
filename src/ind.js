@@ -9,7 +9,6 @@ import zipCreate from './zipCreation.js'
 const app = express();
 const port = 5000;
 
-
 // Connect to MongoDB
 async function main() {
     try {
@@ -91,9 +90,9 @@ app.get('/download', async (req, res) => {
         console.log("columns------------------\n",Object.keys(firstobj._doc));
         let i = 0
         if(!fs.existsSync("./uploads")){
-        s.mkdirSync("uploads");
-        fs.mkdirSync("./uploads/images");
-   fs.mkdirSync("./uploads/resumes");
+            fs.mkdirSync("./uploads");
+            fs.mkdirSync("./uploads/images");
+            fs.mkdirSync("./uploads/resumes");
 
         }
         
@@ -117,14 +116,25 @@ app.get('/download', async (req, res) => {
         await workbook.xlsx.writeFile('./uploads/output.xlsx');
         console.log("file saved successfully");
         zipCreate("./uploads","./result.zip")
-        res.status(200).send({ success: true });
-        // res.download();
+        //res.status(200).send({ success: true });
+        res.download("./result.zip")
     }
     catch (error) {
         console.error("Error in /download route:", error);
         res.status(500).send({ success: false, error: error.message });
     }
 });
+//authenticate
+app.post("/admin",(req,res)=>{
+    const {username,psw}=req.body;
+    console.log(username,psw)
+    if((username==='admin')&& (psw==='12345678')){
+         res.status(200).send({success:true});
+    }
+    else{
+        res.status(404).send({success:false});
+    }
+})
 // Start the server
 app.listen(port, () => {
     
